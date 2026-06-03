@@ -7,7 +7,8 @@ import java.util.Optional;
 
 public enum OutputFormat {
   CSV(Exporters.CSV),
-  MYSQL(Exporters.MYSQL);
+  MYSQL(Exporters.MYSQL),
+  TSV(Exporters.TSV);
 
   private Exporter<Boolean> exporter;
 

@@ -1,5 +1,6 @@
 package com.keenant.madgrades.tools;
 
+import com.google.common.collect.Multimap;
 import com.google.common.io.CharStreams;
 import com.keenant.madgrades.CommandLineApp;
 import com.keenant.madgrades.utils.Exporter;
@@ -12,41 +13,56 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Exporters {
-  /**
-   * Exports to CSV files per table.
-   */
-  public static final Exporter<Boolean> CSV = (dir, tables, writeHeaders) -> {
-    for (String table : tables.keySet()) {
-      File outFile = new File(dir, table + ".csv");
-      PrintWriter writer = new PrintWriter(outFile);
+    /**
+     * Exports to CSV files per table.
+     */
+    public static final Exporter<Boolean> CSV = (dir, tables, writeHeaders) -> {
+        exportDelimited(dir, tables, writeHeaders, ",", "csv");
+    };
 
-      Collection<Map<String, Object>> entries = tables.get(table);
-      List<String> fields = entries.stream().flatMap(list -> list.keySet().stream()).distinct()
-          .collect(Collectors.toList());
+    /**
+     * Exports to TSV files per table.
+     */
+    public static final Exporter<Boolean> TSV = (dir, tables, writeHeaders) -> {
+        exportDelimited(dir, tables, writeHeaders, "\t", "tsv");
+    };
 
-      if (writeHeaders) {
-        writer.println(fields.stream().collect(Collectors.joining(",")));
-      }
+    /**
+    * Shared helper for structured character-separated text formatting.
+    */
+    private static void exportDelimited(File dir, Multimap<String, Map<String, Object>> tables, boolean writeHeaders,
+                                        String delimiter, String extension) throws Exception {
+        for (String table : tables.keySet()) {
+            File outFile = new File(dir, table + "." + extension);
+            PrintWriter writer = new PrintWriter(outFile);
 
-      for (Map<String, Object> entry : entries) {
-        for (String field : fields) {
-          Object value = entry.get(field);
+            Collection<Map<String, Object>> entries = tables.get(table);
+            List<String> fields = entries.stream().flatMap(list -> list.keySet().stream()).distinct()
+              .collect(Collectors.toList());
 
-          if (value instanceof String) {
-            writer.print('"' + value.toString().replace("\"", "\"\"") + '"');
-          } else {
-            writer.print(value);
-          }
+            if (writeHeaders) {
+                writer.println(fields.stream().collect(Collectors.joining(delimiter)));
+            }
 
-          if (fields.indexOf(field) < fields.size() - 1)
-            writer.print(",");
+            for (Map<String, Object> entry : entries) {
+                for (String field : fields) {
+                Object value = entry.get(field);
+
+                if (value instanceof String) {
+                    writer.print('"' + value.toString().replace("\"", "\"\"") + '"');
+                } else {
+                    writer.print(value);
+                }
+
+                if (fields.indexOf(field) < fields.size() - 1)
+                    writer.print(delimiter);
+                }
+
+                writer.println();
+            }
+
+            writer.close();
         }
-
-        writer.println();
-      }
-
-      writer.close();
-    }
   };
 
   /**

@@ -1,7 +1,7 @@
 # madgrades-extractor
 
 This project reads UW Madison grade distribution and course report PDF files (published by the UW Madison Office
-of the Registrar) and converts them into CSV or SQL dump files.
+of the Registrar) and converts them into CSV, SQL dump files, or TSV.
 
 You will find published, update-to-date datasets at [Kaggle](https://www.kaggle.com/Madgrades/uw-madison-courses). You can also find up to date datasets at [UW-Madison's Office of the Registrar](https://registrar.wisc.edu/grade-reports/).
 
@@ -41,7 +41,7 @@ Usage: <main class> [options]
     -f, -format
       The output format
       Default: CSV
-      Possible Values: [CSV, MYSQL]
+      Possible Values: [CSV, MYSQL, TSV]
     -l, -list
       Output list of terms to extract
       Default: false
@@ -62,6 +62,6 @@ Examples:
 
 ## Relational Diagram
 
-The CSV or SQL dumps are in the format of a collection of relational entities modeled something like this:
+The CSV, SQL dumps, and TSV are in the format of a collection of relational entities modeled something like this:
 
 ![diagram](https://cdn.rawgit.com/thekeenant/3c6dbb04f94243df6e84f152e40d87a9/raw/8ce37501a495447f5b71315a6f9aef7b4b7013bc/madgrades-diagram.svg)
