@@ -45,7 +45,7 @@ Usage: <main class> [options]
     -l, -list
       Output list of terms to extract
       Default: false
-    -out, -o
+    -o, -out
       Output directory path for exported files (ex. -o ../data)
       Default: ./
   * -r, -reports
