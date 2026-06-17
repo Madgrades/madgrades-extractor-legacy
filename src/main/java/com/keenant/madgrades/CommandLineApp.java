@@ -172,10 +172,6 @@ public class CommandLineApp {
       dirColumns = Constants.DIR_COLUMNS_SINCE_1204;
     }
 
-    if (termCode == 1224) {
-      gradeColumns = Constants.GRADES_COLUMNS_1224;
-    }
-
     // dir report
     InputStream dir = new FileInputStream(dirPath);
     try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, dirColumns, "SUBJECT", true)) {
