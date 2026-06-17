@@ -68,23 +68,37 @@ public class Pdfs {
       // For some reason, we can parse the same page twice with different columns, and get
       // a different number of rows. This removes the imbalance by removing up until a certain
       // point. "SUBJECT:" is for dir reports, "TERM" is for grade reports.
-      {
-        Iterator<List<RectangularTextContainer>> iterator = table.getRows().iterator();
-        while (iterator.hasNext()) {
-          List<RectangularTextContainer> cols = iterator.next();
-          String joined = cols.stream()
-              .map(RectangularTextContainer::getText)
-              .collect(Collectors.joining(""))
-              .toUpperCase();
+        boolean hasMarker = table.getRows().stream().anyMatch(cols ->
+                cols.stream()
+                        .map(RectangularTextContainer::getText)
+                        .collect(Collectors.joining(""))
+                        .toUpperCase()
+                        .contains(removeUntil)
+        );
 
-          if (joined.contains(removeUntil)) {
-            break;
+        if (hasMarker) {
+          Iterator<List<RectangularTextContainer>> iterator = table.getRows().iterator();
+          while (iterator.hasNext()) {
+            List<RectangularTextContainer> cols = iterator.next();
+            String joined = cols.stream()
+                    .map(RectangularTextContainer::getText)
+                    .collect(Collectors.joining(""))
+                    .toUpperCase();
+
+            if (joined.contains(removeUntil)) {
+              break;
+            }
+            iterator.remove();
           }
-          iterator.remove();
         }
 
-        if (fullText) {
-          iterator = textTable.getRows().iterator();
+      if (fullText) {
+        boolean hasMarkerText = textTable.getRows().stream().anyMatch(cols ->
+                cols.get(0).getText().toUpperCase().contains(removeUntil)
+        );
+
+        if (hasMarkerText) {
+          Iterator<List<RectangularTextContainer>> iterator = textTable.getRows().iterator();
           while (iterator.hasNext()) {
             List<RectangularTextContainer> cols = iterator.next();
             String joined = cols.get(0).getText().toUpperCase();
@@ -93,10 +107,11 @@ public class Pdfs {
             }
             iterator.remove();
           }
+        }
 
-          if (table.getRows().size() != textTable.getRows().size()) {
-            throw new IllegalStateException("Differing # rows: " + table.getRows().size() + " vs " + textTable.getRows().size());
-          }
+        if (table.getRows().size() != textTable.getRows().size()) {
+          throw new IllegalStateException("Differing # rows: " +
+                  table.getRows().size() + " vs " + textTable.getRows().size());
         }
       }
 
